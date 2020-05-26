@@ -14,4 +14,4 @@ If you don't know what ABI your phone is just download `app.apk`.
 
 ## Contributing
 
-You can just suggest new feature to add to the app or if there is something to modify.
+If there are problems with the app or if you want to suggest a feature you can open an issue.
