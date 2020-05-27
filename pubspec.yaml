@@ -1,7 +1,7 @@
 name: Bookkeeper
-description: A new Flutter project.
+description: Personal Finance App.
 publish_to: 'none'
-version: 0.0.1+1
+version: 0.0.2+2
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -17,7 +17,10 @@ dependencies:
   shared_preferences: ^0.5.7
   loadmore: ^1.0.4
   flutter_svg: ^0.17.4
+  flutter_speed_dial: ^1.2.5
   line_awesome_icons: ^1.0.4+2
+  url_launcher: ^5.4.10
+  grouped_list: ^3.1.0
 
 dev_dependencies:
   flutter_test:

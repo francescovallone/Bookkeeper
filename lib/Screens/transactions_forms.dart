@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
+import 'package:line_awesome_icons/line_awesome_icons.dart';
 
 
 class TransactionsFormsPage extends StatefulWidget {
@@ -26,18 +27,19 @@ class TransactionFormsState extends State<TransactionsFormsPage> {
   String _typeText = "Income";
   String _selectedText = "Salary";
   bool _validate = false;
+  String data;
+	NumberFormat formatter;
   List<String> _categories = ["Salary", "Gift", "Interest Money", "Selling", "Award", "Other", "Food", "Entertainment", "Travel", "Education", "Transport", "Shopping", "Loan", "Medical"];
   TransactionFormsState(this.transaction, this.title, this.currency, this.type);
-  MoneyMaskedTextController transactionsController = MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',');
 
   @override
   void initState() {
     super.initState();
+		data = transaction.money.toString();
   }
 
   @override
   void dispose() {
-    transactionsController.dispose();
     super.dispose();
   }
 
@@ -46,8 +48,8 @@ class TransactionFormsState extends State<TransactionsFormsPage> {
     if(transaction.id != null){
       _typeText = transaction.type == 0 ? "Expense" : "Income";
     }
+		formatter = NumberFormat.simpleCurrency(locale: "it_IT", name: currency, decimalDigits: 2);
     var size = MediaQuery.of(context).size;
-    transactionsController.text = (transaction.money*10).toString();
     return WillPopScope(
       onWillPop: (){
         Navigator.of(context).pop();
@@ -65,7 +67,8 @@ class TransactionFormsState extends State<TransactionsFormsPage> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(left:8.0),
-                      child: BackButton(
+                      child: IconButton(
+                        icon: Icon(LineAwesomeIcons.arrow_left),
                         color: Colors.white,
                         onPressed: (){
                           Navigator.of(context).pop();
@@ -81,159 +84,184 @@ class TransactionFormsState extends State<TransactionsFormsPage> {
                 ),
                 Container(
                   width: size.width,
-                  height: size.height*.15,
+                  height: size.height*.25,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(title, style: TextStyle(color: Colors.white, fontSize: 24.0, fontWeight: FontWeight.w300)),
-                          ],
-                        )
-                      ),
+											Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(format(data), style: TextStyle(color: Colors.white, fontSize: data.length >= 5 ? 28.0 : 48.0, fontWeight: FontWeight.w400)),
+                      ),	
+											Padding(
+											  padding: const EdgeInsets.all(16.0),
+											  child: Icon(_typeText == "Income" ? LineAwesomeIcons.plus : LineAwesomeIcons.minus, color: Colors.white),
+											),									
                     ]
                   ),
                 ),
                 Expanded(
-                  child: Container(
-                    width: size.width,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(topRight: Radius.circular(50.0)),
-                      boxShadow: [
-                        BoxShadow(
-                          blurRadius: 10.0,
-                          spreadRadius: 1.0,
-                          color: shadowColor,
-                        )
-                      ]
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 36.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+											Row(
+												children: [
+													Expanded(
+														child: Container(
+															width: double.infinity,
+															decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border(
+                                  bottom: BorderSide(color: Colors.black87.withOpacity(0.1)),
+                                  right: BorderSide(color: Colors.black87.withOpacity(0.1)),
+                                ),
+                              ),
+															child: Padding(
+															  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+															  child: DropdownButtonHideUnderline(			
+															  	child: DropdownButton<String>(
+															  		isExpanded: true,
+															  		value: _selectedText,
+															  		items: _categories.map((String value) {
+															  			return DropdownMenuItem<String>(
+															  				value: value,
+															  				child: Text(value),
+															  			);
+															  		}).toList(),
+															  		onChanged: (String val) {
+															  			_selectedText = val;
+															  			setState(() {
+															  				_selectedText = val;
+															  			});
+															  		},
+															  	),
+															  ),
+															),
+														),
+													),
+													Expanded(
+														child: Container(
+															width: double.infinity,
+															decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border(
+                                  bottom: BorderSide(color: Colors.black87.withOpacity(0.1)),
+                                  right: BorderSide(color: Colors.black87.withOpacity(0.1)),
+                                ),
+                              ),
+															child: Padding(
+															  padding: const EdgeInsets.only(top:8.0, bottom: 8.0),
+															  child: Row(
+																	mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+															  	children: [
+															  		IconButton(
+															  			onPressed: (){
+																				setState(() {
+																				  _typeText = "Income";
+																				});
+																			},
+															  			icon: Icon(LineAwesomeIcons.plus, color: _typeText == "Income" ? greenColor : Colors.grey,),
+															  		),
+															  		IconButton(
+															  			onPressed: (){
+																				setState(() {
+																				  _typeText = "Expense";
+																				});
+																			},
+															  			icon: Icon(LineAwesomeIcons.minus, color: _typeText != "Income" ? redColor : Colors.grey),
+															  		)
+															  	],
+															  ),
+															),
+														),
+													),
+												],
+											),
+                      Row(
                         children: [
-                          Padding(
-                            padding: EdgeInsets.only(left: 16.0),
-                            child: Text("Value".toUpperCase(), style: TextStyle(fontSize: 14.0),),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                            child: Theme(
-                              data: ThemeData(
-                                primaryColor: primaryColor,
-                                primaryColorDark: primaryColor,
-                              ),
-                              child: TextField(
-                                controller: transactionsController,
-                                style: TextStyle(decoration: TextDecoration.none),
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(12),
-                                  WhitelistingTextInputFormatter.digitsOnly, 
-                                ],
-                                onChanged: (value) {
-                                  updateEarning();
-                                },
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.black12),
-                                  ),
-                                  hintText: '10.00',
-                                  prefixText: _typeText == "Income" ? '+ ' : '- ',
-                                  suffixText: currency,
-                                  suffixStyle: const TextStyle(color: Colors.black54),
-                                  errorText: _validate ? "The amount can't be 0.00" : null
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 16.0),
-                            child: Text("Category".toUpperCase(), style: TextStyle(fontSize: 14.0),),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                            child: Container(
-                              width: double.infinity,
-                              child: ButtonTheme(
-                                alignedDropdown: true,
-                                child: DropdownButton<String>(
-                                  isExpanded: true,
-                                  value: _selectedText,
-                                  items: _categories.map((String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String val) {
-                                    _selectedText = val;
-                                    setState(() {
-                                      _selectedText = val;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 16.0),
-                            child: Text("Transaction type".toUpperCase(), style: TextStyle(fontSize: 14.0),),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                            child: Container(
-                              width: double.infinity,
-                              child:ButtonTheme(
-                                alignedDropdown: true,
-                                child: DropdownButton<String>(
-                                  isExpanded: true,
-                                  value: _typeText,
-                                  items: ['Income', 'Expense'].map((String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String val) {
-                                    _typeText = val;
-                                    setState(() {
-                                      _typeText = val;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
+                          buildButton("7"),
+                          buildButton("8"),
+                          buildButton("9"),
                         ],
                       ),
-                    )
+                      Row(
+                        children: [
+                          buildButton("4"),
+                          buildButton("5"),
+                          buildButton("6"),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          buildButton("1"),
+                          buildButton("2"),
+                          buildButton("3"),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          buildButton("0"),
+                          buildButton("."),
+                          Expanded(
+                            child: InkWell(
+                              onTap: (){
+                                setState(() {
+                                  if(data.length > 0 && data != null){
+                                    data = data.substring(0, data.length - 1);
+																		updateEarning();
+                                  }
+                                });
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border(
+                                    bottom: BorderSide(color: Colors.black87.withOpacity(0.1)),
+                                    right: BorderSide(color: Colors.black87.withOpacity(0.1)),
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 24.0),
+                                  child: Icon(LineAwesomeIcons.arrow_left, size: 21.0,),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      InkWell(
+                        onTap: () {
+													if(!_validate) _save();
+													else _showAlertDialog("Upsie!", "The amount can't be 0.00");
+												},
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: size.width,
+                          color: Colors.white,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 24.0),
+                            child: Text("Save".toUpperCase(), style: TextStyle(fontSize: 18.0),),
+                          ),
+                        ),
+                      ),
+                      
+                    ],
                   ),
-                )
+                ),
               ],
             ),
           ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: (){
-            transaction.money == 0 ? _validate = true : _save();
-          },
-          child: Icon(title == "New" ? Icons.add : Icons.edit),
-          backgroundColor: primaryColor,
         ),
       ),
     );
   }
   void updateEarning(){
-    List<String> parsableList = transactionsController.text.split(",");
-    String parsable = parsableList.join('');
-    transaction.money = double.tryParse(parsable);
+		if(data == "0.00" || data == null || data == "") _validate = true;
+    else{
+			transaction.money = formatter.parse(data);
+			_validate = false;
+		}
   }
   void _save() async {
     Navigator.of(context).pop();
@@ -267,4 +295,38 @@ class TransactionFormsState extends State<TransactionsFormsPage> {
 				builder: (_) => alertDialog
 		);
 	}
+  Widget buildButton(String value){
+    return Expanded(
+      child: InkWell(
+        onTap: (){
+          setState(() {
+            if(data.length < 12){
+							if(value != "."){
+              	data += value;
+							}else if(data.length > 0 && data != null && data.indexOf(".") == -1){
+								data += value;
+							}
+							updateEarning();
+						}
+          });
+        },
+        child: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border(bottom: BorderSide(color: Colors.black87.withOpacity(0.1)), right: BorderSide(color: Colors.black87.withOpacity(0.1)))
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24.0),
+            child: Text(value, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500, color: primaryColor)),
+          ),
+        ),
+      ),
+    );
+  }
+  String format(String value){
+    if(value == null || value.length == 0) value = "0.00";
+    double d = formatter.parse(value);
+    return formatter.format(d);
+  }
 }

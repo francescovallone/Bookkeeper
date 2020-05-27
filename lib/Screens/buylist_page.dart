@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:Bookkeeper/Models/buy_entry.dart';
+import 'package:Bookkeeper/Screens/buyentry_page.dart';
 import 'package:Bookkeeper/Screens/buylist_forms.dart';
 import 'package:Bookkeeper/Models/transaction.dart' as t;
 import 'package:Bookkeeper/Utils/colors_cost.dart';
@@ -155,13 +156,23 @@ class BuyListState extends State<BuyListPage> {
                                     return Column(
                                       children: [
                                         Dismissible(
+                                          direction: DismissDirection.startToEnd,
                                           key: UniqueKey(),
                                           background: Container(
-                                            color: redColor,
+                                            color: greenColor,
+                                            alignment: Alignment.centerLeft,
+                                            child: Padding(
+                                              padding: EdgeInsets.only(left:32.0),
+                                              child: Icon(LineAwesomeIcons.check, color: Colors.white,),
+                                            ),
                                           ),
                                           child: InkWell(
                                             onTap: () {
-                                              print("It Works");
+                                              Navigator.of(context).pop();
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(builder: (context) => BuyEntryPage(snapshot.data[position])),
+                                              );
                                             },
                                             child: ListTile(
                                               leading: CircleAvatar(

@@ -2,7 +2,7 @@ import 'package:Bookkeeper/Models/buy_entry.dart';
 import 'package:Bookkeeper/Utils/colors_cost.dart';
 import 'package:Bookkeeper/Utils/database_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 
@@ -60,11 +60,12 @@ class BuyListFormsState extends State<BuyListFormsPage> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(left:8.0),
-                      child: BackButton(
+                      child: IconButton(
+                        icon: Icon(LineAwesomeIcons.arrow_left),
                         color: Colors.white,
                         onPressed: (){
                           Navigator.of(context).pop();
-                          Navigator.of(context).pushNamed("/buylist");
+                          Navigator.of(context).pushNamed('/');
                         },
                       ),
                     ),

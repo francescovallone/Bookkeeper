@@ -59,7 +59,7 @@ class DatabaseHelper {
 	}
 	Future<List<Map<String, dynamic>>> getTransactionsMapList() async {
 		Database db = await this.database;
-		var result = await db.query(tTable, orderBy: '$colId DESC');
+		var result = await db.query(tTable, orderBy: '$colId ASC');
 		return result;
 	}
   
@@ -67,15 +67,6 @@ class DatabaseHelper {
     Database db = await this.database;
     var result = await db.rawQuery('SELECT SUM(money) as total FROM $tTable');
     return result[0]['total'];
-  }
-  Future<List<double>> getChartData() async{
-    Database db = await this.database;
-    List<double> data = new List(2);
-    var resultinc = await db.rawQuery('SELECT SUM(money) as total FROM $tTable WHERE type = 1');
-    var resultexp = await db.rawQuery('SELECT SUM(money) as total FROM $tTable WHERE type = 0');
-    data[0] = resultinc[0]['total'] == null ? 0.00 : resultinc[0]['total'];
-    data[1] = resultexp[0]['total'] == null ? 0.00 : resultexp[0]['total'];
-    return data;
   }
 
 	Future<int> insertTransaction(t.Transaction trans) async {

@@ -8,6 +8,7 @@ import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:grouped_list/grouped_list.dart';
 
 
 class TransactionsPage extends StatefulWidget {
@@ -105,8 +106,8 @@ class TransactionPageState extends State<TransactionsPage> {
                       padding: const EdgeInsets.only(left: 16.0, bottom: 32.0),
                       child: Row(
                         children: [
-                          list[0].money > 0 ? Icon(LineAwesomeIcons.arrow_up, size: 16.0, color: greenColor,) : Icon(LineAwesomeIcons.arrow_down, size: 16.0, color: redColor,),
-                          Text(format(list[0].money), style: TextStyle(color: list[0].money > 0 ? greenColor : redColor, fontSize: 16.0, fontWeight: FontWeight.w400)),
+                          list[list.length-1].money > 0 ? Icon(LineAwesomeIcons.arrow_up, size: 16.0, color: greenColor,) : Icon(LineAwesomeIcons.arrow_down, size: 16.0, color: redColor,),
+                          Text(format(list[list.length-1].money), style: TextStyle(color: list[list.length-1].money > 0 ? greenColor : redColor, fontSize: 16.0, fontWeight: FontWeight.w400)),
                         ],
                       )
                     ),
@@ -133,7 +134,7 @@ class TransactionPageState extends State<TransactionsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: EdgeInsets.only(bottom: 36.0, left: 16.0),
+                          padding: EdgeInsets.only(bottom: 36.0),
                           child: Text("Transactions".toUpperCase(), style: TextStyle(fontSize: 16.0),),
                         ),
                         Flexible(
@@ -141,9 +142,12 @@ class TransactionPageState extends State<TransactionsPage> {
                             future: databaseHelper.getTransactionsList(),
                             builder: (context, snapshot){
                               if(snapshot.hasData){
-                                return ListView.builder(
-                                  itemCount: snapshot.data.length,
-                                  itemBuilder: (BuildContext context, int position){
+                                return GroupedListView(
+                                  elements: snapshot.data,
+                                  groupBy: (element) => element.date,
+                                  groupSeparatorBuilder: _buildGroupSeparator,
+                                  order: GroupedListOrder.DESC,
+                                  itemBuilder: (context, element){
                                     return Column(
                                       children: [
                                         Dismissible(
@@ -151,24 +155,27 @@ class TransactionPageState extends State<TransactionsPage> {
                                           background: Container(
                                             color: redColor,
                                           ),
-                                          child: ListTile(
-                                            leading: snapshot.data[position].type == 1 ? CircleAvatar(
-                                              backgroundColor: greenColor.withOpacity(0.1),
-                                              child: Icon(LineAwesomeIcons.plus, color: greenColor,),
-                                            ) : CircleAvatar(
-                                              backgroundColor: redColor.withOpacity(0.1),
-                                              child: Icon(LineAwesomeIcons.minus, color: redColor,),
-                                            ),
-                                            title: Text(format(snapshot.data[position].money), style: TextStyle(fontWeight: FontWeight.w700),),
-                                            subtitle: Text(snapshot.data[position].date),
-                                            trailing: CircleAvatar(
-                                              backgroundColor: colors[_categories.indexOf(snapshot.data[position].category)%14].withOpacity(0.1),
-                                              child: Icon(categories[_categories.indexOf(snapshot.data[position].category)], color: colors[_categories.indexOf(snapshot.data[position].category)%14],)
+                                          child: InkWell(
+                                            onTap: () => navigateToDetail(element, "Edit"),
+                                            child: ListTile(
+                                              leading: element.type == 1 ? CircleAvatar(
+                                                backgroundColor: greenColor.withOpacity(0.1),
+                                                child: Icon(LineAwesomeIcons.plus, color: greenColor,),
+                                              ) : CircleAvatar(
+                                                backgroundColor: redColor.withOpacity(0.1),
+                                                child: Icon(LineAwesomeIcons.minus, color: redColor,),
+                                              ),
+                                              title: Text(format(element.money), style: TextStyle(fontWeight: FontWeight.w700),),
+                                              subtitle: Text(element.category),
+                                              trailing: CircleAvatar(
+                                                backgroundColor: colors[_categories.indexOf(element.category)%14].withOpacity(0.1),
+                                                child: Icon(categories[_categories.indexOf(element.category)], color: colors[_categories.indexOf(element.category)%14],)
+                                              ),
                                             ),
                                           ),
                                           onDismissed: (direction) {
                                             setState(() {
-                                              _delete(context, snapshot.data[position]);
+                                              _delete(context, element);
                                               updateList();
                                             });
                                           },
@@ -247,5 +254,11 @@ class TransactionPageState extends State<TransactionsPage> {
   void _showSnackBar(BuildContext context, String message) {
     final snackBar = SnackBar(content: Text(message));
     Scaffold.of(context).showSnackBar(snackBar);
+  }
+  Widget _buildGroupSeparator(dynamic groupByValue) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 8.0),
+      child: Text('$groupByValue'.toUpperCase()),
+    );
   }
 }
