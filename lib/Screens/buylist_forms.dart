@@ -50,163 +50,170 @@ class BuyListFormsState extends State<BuyListFormsPage> {
       },
       child: Scaffold(
         backgroundColor: primaryColor,
-        body: SafeArea(
-          child: Container(
-            width: size.width,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left:8.0),
-                      child: IconButton(
-                        icon: Icon(LineAwesomeIcons.arrow_left),
-                        color: Colors.white,
-                        onPressed: (){
-                          Navigator.of(context).pop();
-                          Navigator.of(context).pushNamed('/');
-                        },
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 16.0),
-                      child: Text("Bookkeeper".toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 14.0, fontWeight: FontWeight.w700)),
-                    ),
-                  ],
-                ),
-                Container(
-                  width: size.width,
-                  height: size.height*.15,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+        body: SingleChildScrollView(
+          child: SafeArea(
+            child: Container(
+              width: size.width,
+              height: size.height-24,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(title, style: TextStyle(color: Colors.white, fontSize: 24.0, fontWeight: FontWeight.w300)),
-                          ],
-                        )
+                        padding: const EdgeInsets.only(left:8.0),
+                        child: IconButton(
+                          icon: Icon(LineAwesomeIcons.arrow_left),
+                          color: Colors.white,
+                          onPressed: (){
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pushNamed('/');
+                          },
+                        ),
                       ),
-                    ]
+                      Padding(
+                        padding: const EdgeInsets.only(right: 16.0),
+                        child: Text("Bookkeeper".toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 14.0, fontWeight: FontWeight.w700)),
+                      ),
+                    ],
                   ),
-                ),
-                Expanded(
-                  child: Container(
+                  Container(
                     width: size.width,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(topRight: Radius.circular(50.0)),
-                      boxShadow: [
-                        BoxShadow(
-                          blurRadius: 10.0,
-                          spreadRadius: 1.0,
-                          color: shadowColor,
-                        )
+                    height: size.height*.15,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(title, style: TextStyle(color: Colors.white, fontSize: 24.0, fontWeight: FontWeight.w300)),
+                            ],
+                          )
+                        ),
                       ]
                     ),
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 36.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(left: 16.0),
-                            child: Text("Cost".toUpperCase(), style: TextStyle(fontSize: 14.0),),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                            child: Theme(
-                              data: ThemeData(
-                                primaryColor: primaryColor,
-                                primaryColorDark: primaryColor,
-                              ),
-                              child: TextField(
-                                controller: costController,
-                                style: TextStyle(decoration: TextDecoration.none),
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(12),
-                                  WhitelistingTextInputFormatter.digitsOnly, 
-                                ],
-                                onChanged: (value) {
-                                  updateEarning();
-                                },
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.black12),
-                                  ),
-                                  hintText: '10.00',
-                                  suffixText: currency,
-                                  suffixStyle: const TextStyle(color: Colors.black54),
-                                  errorText: _validate ? "The amount can't be 0.00" : null
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                              padding: EdgeInsets.only(left: 16.0),
-                              child: Text("Product Name".toUpperCase(), style: TextStyle(fontSize: 14.0),),
-                            ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                            child: Theme(
-                              data: ThemeData(
-                                primaryColor: Colors.black54,
-                                primaryColorDark: primaryColor,
-                              ),
-                              child: TextField(
-                                controller: titleController,
-                                style: TextStyle(decoration: TextDecoration.none),
-                                onChanged: (value) {
-                                  updateTitle();
-                                },
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.black12),
-                                  ),
-                                  hintText: 'Untitled',
-                                  suffixStyle: const TextStyle(color: Colors.black54),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 16.0),
-                            child: Text("Product Link".toUpperCase(), style: TextStyle(fontSize: 14.0),),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                            child: Theme(
-                              data: ThemeData(
-                                primaryColor: Colors.black54,
-                                primaryColorDark: primaryColor,
-                              ),
-                              child: TextField(
-                                controller: linkController,
-                                style: TextStyle(decoration: TextDecoration.none),
-                                onChanged: (value) {
-                                  updateLink();
-                                },
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.black12),
-                                  ),
-                                  hintText: 'https://example.com',
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
                   ),
-                )
-              ],
+                  Flexible(
+                    fit: FlexFit.loose,
+                    child: Container(
+                      width: size.width,
+                      height: size.height*.85,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(topRight: Radius.circular(50.0)),
+                        boxShadow: [
+                          BoxShadow(
+                            blurRadius: 10.0,
+                            spreadRadius: 1.0,
+                            color: shadowColor,
+                          )
+                        ]
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 36.0, bottom: 36.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(left: 16.0),
+                              child: Text("Cost".toUpperCase(), style: TextStyle(fontSize: 14.0),),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                              child: Theme(
+                                data: ThemeData(
+                                  primaryColor: primaryColor,
+                                  primaryColorDark: primaryColor,
+                                ),
+                                child: TextField(
+                                  controller: costController,
+                                  style: TextStyle(decoration: TextDecoration.none),
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    LengthLimitingTextInputFormatter(12),
+                                    WhitelistingTextInputFormatter.digitsOnly, 
+                                  ],
+                                  onChanged: (value) {
+                                    updateEarning();
+                                  },
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.black12),
+                                    ),
+                                    hintText: '10.00',
+                                    suffixText: currency,
+                                    suffixStyle: const TextStyle(color: Colors.black54),
+                                    errorText: _validate ? "The amount can't be 0.00" : null
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                                padding: EdgeInsets.only(left: 16.0),
+                                child: Text("Product Name".toUpperCase(), style: TextStyle(fontSize: 14.0),),
+                              ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                              child: Theme(
+                                data: ThemeData(
+                                  primaryColor: Colors.black54,
+                                  primaryColorDark: primaryColor,
+                                ),
+                                child: TextField(
+                                  controller: titleController,
+                                  style: TextStyle(decoration: TextDecoration.none),
+                                  onChanged: (value) {
+                                    updateTitle();
+                                  },
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.black12),
+                                    ),
+                                    hintText: 'Untitled',
+                                    suffixStyle: const TextStyle(color: Colors.black54),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 16.0),
+                              child: Text("Product Link".toUpperCase(), style: TextStyle(fontSize: 14.0),),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                              child: Theme(
+                                data: ThemeData(
+                                  primaryColor: Colors.black54,
+                                  primaryColorDark: primaryColor,
+                                ),
+                                child: TextField(
+                                  controller: linkController,
+                                  style: TextStyle(decoration: TextDecoration.none),
+                                  onChanged: (value) {
+                                    updateLink();
+                                  },
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.black12),
+                                    ),
+                                    hintText: 'https://example.com',
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ),
