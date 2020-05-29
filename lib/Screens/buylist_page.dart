@@ -35,6 +35,11 @@ class BuyListState extends State<BuyListPage> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     if (list == null) {
@@ -91,7 +96,7 @@ class BuyListState extends State<BuyListPage> {
                             )
                           );
                         } else if (snapshot.hasError) {
-                          return Text("\${snapshot.error}");
+                          return Text("${snapshot.error}");
                         }
                         return CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),);
                       },
@@ -138,7 +143,7 @@ class BuyListState extends State<BuyListPage> {
                                     )
                                   );
                                 } else if (snapshot.hasError) {
-                                  return Text("\${snapshot.error}");
+                                  return Text("${snapshot.error}");
                                 }
                                 return CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),);
                               },
@@ -197,7 +202,7 @@ class BuyListState extends State<BuyListPage> {
                                   }
                                 );
                               }else if (snapshot.hasError) {
-                                return Text("\${snapshot.error}");
+                                return Text("${snapshot.error}");
                               }
                               return Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(primaryColor),),);
                             }

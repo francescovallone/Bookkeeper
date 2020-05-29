@@ -48,7 +48,11 @@ class DatabaseHelper {
 	Future<Database> initializeDatabase() async {
 		Directory directory = await getApplicationDocumentsDirectory();
 		String path = directory.path + 'money_manager.db';
-		var transsDatabase = await openDatabase(path, version: 1, onCreate: _createDb);
+		var transsDatabase = await openDatabase(
+      path,
+      version: 1, 
+      onCreate: _createDb
+    );
 		return transsDatabase;
 	}
 
