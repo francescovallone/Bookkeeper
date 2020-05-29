@@ -9,7 +9,7 @@ Bookkeeper is a Personal Finance App.
 
 ## Download
 
-If you want to download it click [here](https://github.com/francescovallone/Bookkeeper/releases/tag/v0.0.2%2B3).<br>
+If you want to download it click [here](https://github.com/francescovallone/Bookkeeper/releases/tag/v0.0.2%2B4).<br>
 If you don't know what ABI your phone is just download `app.apk`.
 
 ## Contributing
