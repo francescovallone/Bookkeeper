@@ -2,16 +2,14 @@ class Goal{
   int _id;
   double _moneyNeeded;
   String _title;
-  String _description;
-  int _idTransaction;
+  String _date;
   int _status;
-  Goal(this._moneyNeeded, this._title, this._description, this._status, this._idTransaction);
-  Goal.withId(this._id, this._moneyNeeded, this._title, this._description, this._status, this._idTransaction);
+  Goal(this._moneyNeeded, this._title, this._date, this._status);
+  Goal.withId(this._id, this._moneyNeeded, this._title, this._date, this._status);
   int get id => _id;
   double get moneyNeeded => _moneyNeeded;
   String get title => _title;
-  String get desc => _description;
-  int get idT => _idTransaction;
+  String get desc => _date;
   int get status => _status;
   set moneyNeeded(double m) {
 		this._moneyNeeded = m;
@@ -19,12 +17,9 @@ class Goal{
   set title(String t) {
 		this._title = t;
 	}
-  set desc(String d){
-    this._description = d;
+  set date(String d){
+    this._date = d;
   }
-  set idT(int i) {
-		this._idTransaction = i;
-	}
   set status(int s){
     this._status = s;
   }
@@ -35,8 +30,7 @@ class Goal{
 		}
 		map['money_needed'] = _moneyNeeded;
 		map['title'] = _title;
-    map['description'] = _description;
-    map['id_transactions'] = _idTransaction;
+    map['date'] = _date;
     map['status'] = _status;
 		return map;
 	}
@@ -44,8 +38,7 @@ class Goal{
 		this._id = map['id'];
 		this._moneyNeeded = map['money_needed'];
 		this._title = map['title'];
-    this._description = map['description'];
-    this._idTransaction = map['id_transactions'];
+    this._date = map['date'];
     this._status = map['status'];
 	}
 }

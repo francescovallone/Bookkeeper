@@ -1,6 +1,7 @@
-import 'package:Bookkeeper/Models/transaction.dart' as t;
-import 'package:Bookkeeper/Models/goal.dart';
-import 'package:Bookkeeper/Models/buy_entry.dart';
+import 'package:Bookkeeper/models/subscription.dart';
+import 'package:Bookkeeper/models/transaction.dart' as t;
+import 'package:Bookkeeper/models/goal.dart';
+import 'package:Bookkeeper/models/buy_entry.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import 'dart:io';
@@ -13,6 +14,7 @@ class DatabaseHelper {
 	String tTable = 'transaction_table';
   String gTable = 'goals_table';
   String bTable = 'bentries_table';
+  String subsTable = 'subscriptions_table';
   String listTable = 'buylist_table';
 	String colId = 'id';
 	String colMoney = 'money';
@@ -23,9 +25,9 @@ class DatabaseHelper {
 	String colMoneyNeeded = 'money_needed';
   String colStatus = 'status';
   String colDesc = 'description';
-  String colIdTrans = 'id_transactions';
   String colCost = 'cost';
   String colLink = 'link';
+  String colPeriod = 'period';
 
 	DatabaseHelper._createInstance(); // Named constructor to create instance of DatabaseHelper
 
@@ -47,32 +49,58 @@ class DatabaseHelper {
 
 	Future<Database> initializeDatabase() async {
 		Directory directory = await getApplicationDocumentsDirectory();
-		String path = directory.path + 'money_manager.db';
-		var transsDatabase = await openDatabase(
+		String path = directory.path + 'bookeeper.db';
+		var database = await openDatabase(
       path,
-      version: 1, 
-      onCreate: _createDb
+      version: 3, 
+      onCreate: _createDb,
+      onDowngrade: onDatabaseDowngradeDelete,
     );
-		return transsDatabase;
+		return database;
 	}
 
 	void _createDb(Database db, int newVersion) async {
 		await db.execute('CREATE TABLE $tTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colMoney REAL, $colDate TEXT, $colCategory TEXT, $colType INTEGER)');
-    await db.execute('CREATE TABLE $gTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colMoneyNeeded REAL, $colTitle TEXT, $colDesc TEXT, $colStatus INTEGER, $colIdTrans INTEGER)');
+    await db.execute('CREATE TABLE $gTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colMoneyNeeded REAL, $colTitle TEXT, $colDate TEXT, $colStatus INTEGER)');
     await db.execute('CREATE TABLE $bTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colCost REAL, $colTitle TEXT, $colLink TEXT)');
-	}
+    await db.execute('CREATE TABLE $subsTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colCost REAL, $colTitle TEXT, $colPeriod TEXT, $colDate TEXT)');
+	
+  }
 	Future<List<Map<String, dynamic>>> getTransactionsMapList() async {
+		Database db = await this.database;
+		var result = await db.query(tTable, orderBy: '$colId DESC', limit: 5);
+		return result;
+	}
+  Future<List<Map<String, dynamic>>> getTransactionsFullMapList() async {
 		Database db = await this.database;
 		var result = await db.query(tTable, orderBy: '$colId ASC');
 		return result;
 	}
-  
+  Future<List<t.Transaction>> getTransactionsFullList() async {
+	  var moneyMapList = await getTransactionsFullMapList();
+		int count = moneyMapList.length;
+		List<t.Transaction> moneyList = List<t.Transaction>();
+		for (int i = 0; i < count; i++) {
+			moneyList.add(t.Transaction.fromMapObject(moneyMapList[i]));
+		}
+		return moneyList;
+	}
   Future<double> getSumTransactions() async{
     Database db = await this.database;
-    var result = await db.rawQuery('SELECT SUM(money) as total FROM $tTable');
+    var result = await db.rawQuery('SELECT SUM($colMoney) as total FROM $tTable');
     return result[0]['total'];
   }
-
+  Future<List<Map<String, dynamic>>> getExpenseIncomeMap() async{
+    Database db = await this.database;
+    var result = await db.rawQuery('SELECT SUM($colMoney) as money, $colType FROM $tTable GROUP BY $colType');
+    return result;
+  }
+  Future<List<t.Transaction>> getExpenseIncome() async{
+    var mapList = await getExpenseIncomeMap();
+    List<t.Transaction> transactionsList = List<t.Transaction>();
+    for(int i = 0; i < mapList.length; i++) transactionsList.add(t.Transaction.fromMapObject(mapList[i]));
+    return transactionsList;
+  }
 	Future<int> insertTransaction(t.Transaction trans) async {
 		Database db = await this.database;
 		var result = await db.insert(tTable, trans.toMap());
@@ -97,13 +125,23 @@ class DatabaseHelper {
 		return result;
 	}
 
-	Future<int> getCount() async {
+	Future<int> getTransactionsCount() async {
 		Database db = await this.database;
 		List<Map<String, dynamic>> x = await db.rawQuery('SELECT COUNT (*) from $tTable');
 		int result = Sqflite.firstIntValue(x);
 		return result;
 	}
-
+  Future<List<Map<String, dynamic>>> getTransactionsByCategory() async {
+		Database db = await this.database;
+		var result = await db.rawQuery('SELECT SUM($colMoney) as money, $colCategory FROM $tTable GROUP BY $colCategory');
+		return result;
+	}
+  Future<List<t.Transaction>> getTransactionsListCategory() async{
+    var categoryMapList = await getTransactionsByCategory();
+    List<t.Transaction> transactionsList = List<t.Transaction>();
+    for(int i = 0; i < categoryMapList.length; i++) transactionsList.add(t.Transaction.fromMapObject(categoryMapList[i]));
+    return transactionsList;
+  }
 	Future<List<t.Transaction>> getTransactionsList() async {
 		var moneyMapList = await getTransactionsMapList();
 		int count = moneyMapList.length;
@@ -116,7 +154,7 @@ class DatabaseHelper {
   // Goals
   Future<List<Map<String, dynamic>>> getGoalsMapList() async {
 		Database db = await this.database;
-		var result = await db.query(gTable, orderBy: '$colId DESC');
+		var result = await db.query(gTable, orderBy: '$colId DESC', limit: 10);
 		return result;
 	}
   Future<List<Goal>> getGoalsList() async {
@@ -148,6 +186,17 @@ class DatabaseHelper {
 		int result = await db.rawDelete('DELETE FROM $gTable WHERE $colId = $id');
 		return result;
 	}
+  Future<double> getGoalsSum() async{
+    Database db = await this.database;
+    var result = await db.rawQuery('SELECT SUM($colMoneyNeeded) as total FROM $gTable');
+    return result[0]['total'];
+  }
+  Future<int> getGoalsCount() async{
+    Database db = await this.database;
+		List<Map<String, dynamic>> x = await db.rawQuery('SELECT COUNT (*) from $gTable');
+		int result = Sqflite.firstIntValue(x);
+		return result;
+  }
   // Buy Entry
   Future<List<Map<String, dynamic>>> getBuyMapList() async {
 		Database db = await this.database;
@@ -185,7 +234,7 @@ class DatabaseHelper {
 	}
   Future<double> getSumList() async{
     Database db = await this.database;
-    var result = await db.rawQuery('SELECT SUM(cost) as total FROM $bTable');
+    var result = await db.rawQuery('SELECT SUM($colCost) as total FROM $bTable');
     return result[0]['total'];
   }
   Future<int> getBuyCount() async {
@@ -194,4 +243,28 @@ class DatabaseHelper {
 		int result = Sqflite.firstIntValue(x);
 		return result;
 	}
+  // Subscriptions
+  Future<List<Map<String, dynamic>>> getSubsMapList() async {
+		Database db = await this.database;
+		var result = await db.query(subsTable, orderBy: '$colId DESC');
+		return result;
+	}
+  Future<List<Subscription>> getSubscriptionsList() async {
+    var subsMapList = await getSubsMapList();
+		int count = subsMapList.length;
+		List<Subscription> subsList = List<Subscription>();
+		for (int i = 0; i < count; i++) {
+			subsList.add(Subscription.fromMapObject(subsMapList[i]));
+		}
+		return subsList;
+  }
+  Future<double> getSubscriptionsSumMonthly() async{
+    Database db = await this.database;
+    var result = await db.rawQuery('SELECT SUM($colCost) as total FROM $subsTable where $colPeriod = "monthly"');
+    var yearly = await db.rawQuery('SELECT SUM($colCost) as total FROM $subsTable where $colPeriod = "yearly"');
+    if(yearly[0]['total'] != null){
+      result[0]['total'] += (yearly[0]['total']/12);
+    }
+    return result[0]['total'];
+  }
 }
