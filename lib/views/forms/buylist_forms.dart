@@ -155,7 +155,7 @@ class BuyListFormsState extends State<BuyListFormsPage> {
                                       keyboardType: TextInputType.number,
                                       inputFormatters: [
                                         LengthLimitingTextInputFormatter(12),
-                                        WhitelistingTextInputFormatter.digitsOnly, 
+                                        FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),  
                                       ],
                                       onChanged: (value) {
                                         updateCost();

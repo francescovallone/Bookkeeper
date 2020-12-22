@@ -7,7 +7,6 @@ import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:flutter/services.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:flushbar/flushbar.dart';
-import 'package:characters/characters.dart';
 
 
 class TransactionsFormsPage extends StatefulWidget {
@@ -120,7 +119,7 @@ class TransactionFormsState extends State<TransactionsFormsPage> {
                               title: Text(transaction.category, style: TextStyle(fontWeight: FontWeight.w500),),
                               subtitle: Text(transaction.type == 1 ? "Income" : "Expense"),
                               trailing: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Text(format(transaction.money), style: TextStyle(fontWeight: FontWeight.w500),),
                                   Text(transaction.date.split(",")[0])
@@ -168,7 +167,7 @@ class TransactionFormsState extends State<TransactionsFormsPage> {
                                       keyboardType: TextInputType.number,
                                       inputFormatters: [
                                         LengthLimitingTextInputFormatter(12),
-                                        WhitelistingTextInputFormatter.digitsOnly, 
+                                        FilteringTextInputFormatter.allow(RegExp(r'[0-9]')), 
                                       ],
                                       onChanged: (value) {
                                         updateMoney();
@@ -215,6 +214,7 @@ class TransactionFormsState extends State<TransactionsFormsPage> {
                             ),
                             title == "New" ?
                             Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text("Type", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18.0),),
                                 Padding(

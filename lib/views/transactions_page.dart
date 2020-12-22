@@ -155,13 +155,17 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                         return Column(
                                           children: [
                                             position != 0 ? Divider() : SizedBox(height: 0,),
-                                            InkWell(
-                                              onTap: (){
-                                                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                                  return TransactionPage(snapshot.data[position]);
-                                                }));
-                                              },
-                                              child: ListTile(
+                                              ListTile(
+                                                onTap: (){
+                                                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                                    return TransactionPage(snapshot.data[position]);
+                                                  })).then((_) => {
+                                                    setState((){
+                                                      balance = getMoney();
+                                                      list = getTransactions();
+                                                    })
+                                                  });
+                                                },
                                                 contentPadding: EdgeInsets.zero,
                                                 leading: Container(
                                                   padding: EdgeInsets.all(16.0),
@@ -181,7 +185,6 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                                   ],
                                                 ),
                                               ),
-                                            ),
                                           ],
                                         );
                                       }
@@ -237,7 +240,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
   void navigateToForm(t.Transaction trans, String title) async {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return TransactionsFormsPage(trans, title, currency, trans.type);
-    })).then((value) {
+    })).then((_) {
       setState((){
         balance = getMoney();
         list = getTransactions();

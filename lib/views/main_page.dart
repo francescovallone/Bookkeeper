@@ -53,20 +53,20 @@ class _MainState extends State<MainPage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(LineAwesomeIcons.bank),
-            title: Text('Home'),
+            label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(LineAwesomeIcons.list),
-            title: Text('Buy List'),
+            label: 'Buy List',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(LineAwesomeIcons.history),
-            title: Text('Subscriptions'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(LineAwesomeIcons.cog),
-            title: Text('Settings'),
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(LineAwesomeIcons.history),
+          //   label: 'Subscriptions',
+          // ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(LineAwesomeIcons.cog),
+          //   label: 'Settings',
+          // ),
         ],
       ),
       body: PageView(
@@ -76,8 +76,8 @@ class _MainState extends State<MainPage> {
         children: <Widget>[
           TransactionsPage(),
           BuyListPage(),
-          SubscriptionsPage(),
-          SettingsPage()
+          //SubscriptionsPage(),
+          //SettingsPage()
         ],
       ),
     ); 
