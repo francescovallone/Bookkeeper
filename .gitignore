@@ -36,6 +36,7 @@ build
 ios
 pubspec.lock
 key.properties
+key.jks
 # Web related
 lib/generated_plugin_registrant.dart
 
