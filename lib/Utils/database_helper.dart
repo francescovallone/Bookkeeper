@@ -64,7 +64,6 @@ class DatabaseHelper {
     await db.execute('CREATE TABLE $gTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colMoneyNeeded REAL, $colTitle TEXT, $colDate TEXT, $colStatus INTEGER)');
     await db.execute('CREATE TABLE $bTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colCost REAL, $colTitle TEXT, $colLink TEXT)');
     await db.execute('CREATE TABLE $subsTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colCost REAL, $colTitle TEXT, $colPeriod TEXT, $colDate TEXT)');
-	
   }
 	Future<List<Map<String, dynamic>>> getTransactionsMapList() async {
 		Database db = await this.database;
@@ -267,4 +266,14 @@ class DatabaseHelper {
     }
     return result[0]['total'];
   }
+  Future<int> insertSubscription(Subscription sub) async {
+		Database db = await this.database;
+		var result = await db.insert(subsTable, sub.toMap());
+		return result;
+	}
+  Future<int> updateSubscription(Subscription sub) async {
+		var db = await this.database;
+		var result = await db.update(subsTable, sub.toMap(), where: '$colId = ?', whereArgs: [sub.id]);
+		return result;
+	}
 }

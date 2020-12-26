@@ -21,9 +21,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
   Future<List<t.Transaction>> list;
   List<t.Transaction> dummylist = List<t.Transaction>();
   String currency = "\€";
-  List<String> _categories = ["Salary", "Gift", "Interest Money", "Selling", "Award", "Other", "Food", "Entertainment", "Travel", "Education", "Transport", "Shopping", "Loan", "Medical", "Goal"];
-  List<Color> colors = [Colors.blue, Colors.yellow, Colors.orange, Colors.purple, Colors.pink, Colors.amber, Colors.indigo, Colors.teal, Colors.brown, Colors.blueGrey, Colors.deepOrange, Colors.deepPurple, Colors.grey];
-  List<IconData> categories = [LineAwesomeIcons.dollar, LineAwesomeIcons.gift, LineAwesomeIcons.line_chart, LineAwesomeIcons.money, LineAwesomeIcons.certificate, LineAwesomeIcons.cubes, LineAwesomeIcons.cutlery, LineAwesomeIcons.music, LineAwesomeIcons.plane, LineAwesomeIcons.graduation_cap, LineAwesomeIcons.bus, LineAwesomeIcons.shopping_cart, LineAwesomeIcons.bank, LineAwesomeIcons.ambulance, LineAwesomeIcons.trophy];
+  
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   Future<double> balance;
 
@@ -170,15 +168,16 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                                 leading: Container(
                                                   padding: EdgeInsets.all(16.0),
                                                   decoration: BoxDecoration(
-                                                    color: colors[_categories.indexOf(snapshot.data[position].category)%14].withOpacity(0.1),
+                                                    color: StringConts.categories[snapshot.data[position].category]['color'].withOpacity(0.1),
                                                     borderRadius: BorderRadius.circular(16.0)
                                                   ),
-                                                  child: Icon(categories[_categories.indexOf(snapshot.data[position].category)], color: colors[_categories.indexOf(snapshot.data[position].category)%14], size: 24.0,),
+                                                  child: Icon(StringConts.categories[snapshot.data[position].category]['icon'], color: StringConts.categories[snapshot.data[position].category]['color'], size: 24.0,),
                                                 ),
                                                 title: Text(snapshot.data[position].category, style: TextStyle(fontWeight: FontWeight.w500),),
                                                 subtitle: Text(snapshot.data[position].type == 1 ? "Income" : "Expense"),
                                                 trailing: Column(
                                                   mainAxisAlignment: MainAxisAlignment.center,
+                                                  crossAxisAlignment: CrossAxisAlignment.end,
                                                   children: [
                                                     Text(format(snapshot.data[position].money), style: TextStyle(fontWeight: FontWeight.w500),),
                                                     Text(snapshot.data[position].date.split(",")[0])

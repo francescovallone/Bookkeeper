@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:Bookkeeper/models/subscription.dart';
 import 'package:Bookkeeper/utils/consts.dart';
+import 'package:Bookkeeper/views/forms/subscriptions_forms.dart';
 import 'package:Bookkeeper/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
@@ -15,7 +16,7 @@ class SubscriptionsPage extends StatefulWidget {
 
 class _SubscriptionsPageState extends State<SubscriptionsPage> {
   DatabaseHelper databaseHelper = DatabaseHelper();
-  List<Subscription> list;
+  Future<List<Subscription>> list;
   String currency = "\€";
   Future<double> total;
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
@@ -25,6 +26,7 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
     super.initState();
     getCurrency().then((value) => currency = value);
     total = getMoney();
+    list = getSubscriptions();
   }
   @override
   void dispose() {
@@ -50,7 +52,7 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
                       children: [
                         Text("My Subscriptions", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18.0),),
                         InkWell(
-                          onTap: null,
+                          onTap: (){navigateToForm(Subscription(0, "Untitled", "monthly", DateFormat.yMMMMd().format(DateTime.now())), "New");},
                           child: Icon(LineAwesomeIcons.plus),
                         ),
                       ],
@@ -121,7 +123,7 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
                       child: Column(
                         children: [
                           FutureBuilder<List<Subscription>>(
-                            future: databaseHelper.getSubscriptionsList(),
+                            future: list,
                             builder: (context, snapshot){
                               if(snapshot.hasData){
                                 if(snapshot.data.length != 0){
@@ -130,8 +132,6 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
                                     physics: const NeverScrollableScrollPhysics(),
                                     itemCount: snapshot.data.length,
                                     itemBuilder: (BuildContext context, int position){
-                                      DateTime parsed = DateTime.parse(snapshot.data[position].date);
-                                      Duration difference = parsed.difference(DateTime.now());
                                       return Column(
                                         children: [
                                           position != 0 ? Divider() : SizedBox(height: 0,),
@@ -145,11 +145,18 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
                                                   color: Colors.orange.withOpacity(0.1),
                                                   borderRadius: BorderRadius.circular(16.0)
                                                 ),
-                                                child: Icon(LineAwesomeIcons.trophy, color: Colors.orange, size: 24.0,),
+                                                child: Icon(LineAwesomeIcons.history, color: Colors.orange, size: 24.0,),
                                               ),
                                               title: Text(snapshot.data[position].title, style: TextStyle(fontWeight: FontWeight.w500),),
-                                              subtitle: Text((difference.inDays*-1).toString()),
-                                              trailing: Text(format(snapshot.data[position].cost), style: TextStyle(fontWeight: FontWeight.w500),),
+                                              subtitle: Text(snapshot.data[position].period),
+                                              trailing: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                                  children: [
+                                                    Text(format(snapshot.data[position].cost), style: TextStyle(fontWeight: FontWeight.w500),),
+                                                    Text(snapshot.data[position].date.split(",")[0])
+                                                  ],
+                                                ),
                                             ),
                                           ),
                                         ],
@@ -199,13 +206,18 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
     NumberFormat formatter = new NumberFormat.compactCurrency(locale: "en_US", symbol: currency, decimalDigits: 2);
     return formatter.format(value);
   }
-  // void navigateToForm(Goal entry, String title) async {
-  //   bool result =
-  //       await Navigator.push(context, MaterialPageRoute(builder: (context) {
-  //     return BuyListFormsPage(entry, title, currency);
-  //   }));
-  //   if (result == true) {
-  //     total = getMoney();
-  //   }
-  // }
+  Future<List<Subscription>> getSubscriptions() async{
+    final List<Subscription> x = await databaseHelper.getSubscriptionsList();
+    return x;
+  }
+  void navigateToForm(Subscription entry, String title) async {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return SubscriptionsFormsPage(entry, title, currency, "monthly");
+    })).then((value) => {
+      setState((){
+        total = getMoney();
+        list = getSubscriptions();
+      })
+    });
+  }
 }

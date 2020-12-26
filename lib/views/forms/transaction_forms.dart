@@ -28,8 +28,6 @@ class TransactionFormsState extends State<TransactionsFormsPage> {
   bool _validate = false;
   TransactionFormsState(this.transaction, this.title, this.currency, this.type);
   List<String> _categories = ["Salary", "Gift", "Interest Money", "Selling", "Award", "Other", "Food", "Entertainment", "Travel", "Education", "Transport", "Shopping", "Loan", "Medical", "Goal"];
-  List<Color> colors = [Colors.blue, Colors.yellow, Colors.orange, Colors.purple, Colors.pink, Colors.amber, Colors.indigo, Colors.teal, Colors.brown, Colors.blueGrey, Colors.deepOrange, Colors.deepPurple, Colors.grey];
-  List<IconData> categories = [LineAwesomeIcons.dollar, LineAwesomeIcons.gift, LineAwesomeIcons.line_chart, LineAwesomeIcons.money, LineAwesomeIcons.certificate, LineAwesomeIcons.cubes, LineAwesomeIcons.cutlery, LineAwesomeIcons.music, LineAwesomeIcons.plane, LineAwesomeIcons.graduation_cap, LineAwesomeIcons.bus, LineAwesomeIcons.shopping_cart, LineAwesomeIcons.bank, LineAwesomeIcons.ambulance, LineAwesomeIcons.trophy];
   // Form
   MoneyMaskedTextController _moneyController = MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',');
   TextEditingController _linkController = TextEditingController();
@@ -111,15 +109,16 @@ class TransactionFormsState extends State<TransactionsFormsPage> {
                               leading: Container(
                                 padding: EdgeInsets.all(16.0),
                                 decoration: BoxDecoration(
-                                  color: colors[_categories.indexOf(transaction.category)%14].withOpacity(0.1),
+                                  color: StringConts.categories[transaction.category]['color'].withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(16.0)
                                 ),
-                                child: Icon(categories[_categories.indexOf(transaction.category)], color: colors[_categories.indexOf(transaction.category)%14], size: 24.0,),
+                                child: Icon(StringConts.categories[transaction.category]['icon'], color: StringConts.categories[transaction.category]['color'], size: 24.0,),
                               ),
                               title: Text(transaction.category, style: TextStyle(fontWeight: FontWeight.w500),),
                               subtitle: Text(transaction.type == 1 ? "Income" : "Expense"),
                               trailing: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text(format(transaction.money), style: TextStyle(fontWeight: FontWeight.w500),),
                                   Text(transaction.date.split(",")[0])
@@ -205,7 +204,9 @@ class TransactionFormsState extends State<TransactionsFormsPage> {
                                     onChanged: (String val) {
                                       _selectedText = val;
                                       setState(() {
+                                        
                                         transaction.category = val;
+                                        print(transaction.category);
                                       });
                                     },
                                   ),

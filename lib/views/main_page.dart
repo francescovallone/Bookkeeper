@@ -40,7 +40,6 @@ class _MainState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         selectedFontSize: 12.0,
@@ -59,10 +58,10 @@ class _MainState extends State<MainPage> {
             icon: Icon(LineAwesomeIcons.list),
             label: 'Buy List',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(LineAwesomeIcons.history),
-          //   label: 'Subscriptions',
-          // ),
+          BottomNavigationBarItem(
+            icon: Icon(LineAwesomeIcons.history),
+            label: 'Subscriptions',
+          ),
           // BottomNavigationBarItem(
           //   icon: Icon(LineAwesomeIcons.cog),
           //   label: 'Settings',
@@ -76,7 +75,7 @@ class _MainState extends State<MainPage> {
         children: <Widget>[
           TransactionsPage(),
           BuyListPage(),
-          //SubscriptionsPage(),
+          SubscriptionsPage(),
           //SettingsPage()
         ],
       ),
