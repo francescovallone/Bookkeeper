@@ -7,6 +7,7 @@ import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:flutter/services.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:flushbar/flushbar.dart';
+import 'package:Bookkeeper/utils/capitalize.dart';
 
 
 class SubscriptionsFormsPage extends StatefulWidget {
@@ -24,10 +25,10 @@ class SubscriptionsFormsState extends State<SubscriptionsFormsPage> {
   Subscription subscription;
   String title;
   String currency;
-  String type;
+  String period = "monthly";
   bool _validate = false;
   DateTime selectedDate = DateTime.now();
-  SubscriptionsFormsState(this.subscription, this.title, this.currency, this.type);
+  SubscriptionsFormsState(this.subscription, this.title, this.currency, this.period);
   // Form
   MoneyMaskedTextController _moneyController = MoneyMaskedTextController(decimalSeparator: '.', thousandSeparator: ',');
   TextEditingController _linkController = TextEditingController();
@@ -155,7 +156,7 @@ class SubscriptionsFormsState extends State<SubscriptionsFormsPage> {
                                       style: TextStyle(decoration: TextDecoration.none),
                                       inputFormatters: [
                                         LengthLimitingTextInputFormatter(12),
-                                        FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z]')), 
+                                        FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z\s]')), 
                                       ],
                                       onChanged: (value) {
                                         setState(() {
@@ -175,7 +176,7 @@ class SubscriptionsFormsState extends State<SubscriptionsFormsPage> {
                                 ),
                               ),
                             ),
-                            Text("Cost per month", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18.0),),
+                            Text("${subscription.period.capitalize()} cost", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18.0),),
                             Padding(
                               padding: EdgeInsets.symmetric(vertical: 16.0),
                               child: Theme(
@@ -236,40 +237,39 @@ class SubscriptionsFormsState extends State<SubscriptionsFormsPage> {
                                 ),
                               )
                             ),
-                            // title == "New" ?
-                            // Column(
-                            //   crossAxisAlignment: CrossAxisAlignment.start,
-                            //   children: [
-                            //     Text("Type", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18.0),),
-                            //     Padding(
-                            //       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                            //       child: Container(
-                            //         width: double.infinity,
-                            //         child:ButtonTheme(
-                            //           alignedDropdown: true,
-                            //           child: DropdownButton<String>(
-                            //             isExpanded: true,
-                            //             value: _typeText,
-                            //             items: ['Income', 'Expense'].map((String value) {
-                            //               return DropdownMenuItem<String>(
-                            //                 value: value,
-                            //                 child: Text(value),
-                            //               );
-                            //             }).toList(),
-                            //             onChanged: (String val) {
-                            //               _typeText = val;
-                            //               setState(() {
-                            //                 subscription.type = val == "Income" ? 1 : 0;
-                            //                 _typeText = val;
-                            //               });
-                            //             },
-                            //           ),
-                            //         ),
-                            //       ),
-                            //     ),
-                            //   ],
-                            // )
-                            // : SizedBox(),
+                            title == "New" ?
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("Type", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18.0),),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                                  child: Container(
+                                    width: double.infinity,
+                                    child:ButtonTheme(
+                                      alignedDropdown: true,
+                                      child: DropdownButton<String>(
+                                        isExpanded: true,
+                                        value: period,
+                                        items: ['monthly', 'yearly'].map((String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value.capitalize()),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String val) {
+                                          setState(() {
+                                            subscription.period = val;
+                                            period = val;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                            : SizedBox(),
 
                             InkWell(
                               onTap: (){
@@ -345,7 +345,6 @@ class SubscriptionsFormsState extends State<SubscriptionsFormsPage> {
     if (subscription.id != null) {
       result = await databaseHelper.updateSubscription(subscription);
     } else {
-      subscription.period = "monthly";
       subscription.date = DateFormat.yMMMMd().format(selectedDate);
       result = await databaseHelper.insertSubscription(subscription);
     }

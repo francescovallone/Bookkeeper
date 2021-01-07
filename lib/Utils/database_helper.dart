@@ -257,14 +257,11 @@ class DatabaseHelper {
 		}
 		return subsList;
   }
-  Future<double> getSubscriptionsSumMonthly() async{
+  Future<List<double>> getSubscriptionsSumMonthly() async{
     Database db = await this.database;
     var result = await db.rawQuery('SELECT SUM($colCost) as total FROM $subsTable where $colPeriod = "monthly"');
     var yearly = await db.rawQuery('SELECT SUM($colCost) as total FROM $subsTable where $colPeriod = "yearly"');
-    if(yearly[0]['total'] != null){
-      result[0]['total'] += (yearly[0]['total']/12);
-    }
-    return result[0]['total'];
+    return [result[0]['total'], yearly[0]['total']];
   }
   Future<int> insertSubscription(Subscription sub) async {
 		Database db = await this.database;
@@ -274,6 +271,11 @@ class DatabaseHelper {
   Future<int> updateSubscription(Subscription sub) async {
 		var db = await this.database;
 		var result = await db.update(subsTable, sub.toMap(), where: '$colId = ?', whereArgs: [sub.id]);
+		return result;
+	}
+  Future<int> deleteSubscription(int id) async {
+		var db = await this.database;
+		int result = await db.rawDelete('DELETE FROM $subsTable WHERE $colId = $id');
 		return result;
 	}
 }

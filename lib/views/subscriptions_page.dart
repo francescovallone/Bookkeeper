@@ -2,11 +2,13 @@ import 'dart:async';
 import 'package:Bookkeeper/models/subscription.dart';
 import 'package:Bookkeeper/utils/consts.dart';
 import 'package:Bookkeeper/views/forms/subscriptions_forms.dart';
+import 'package:Bookkeeper/views/singleitem_pages/subscription_page.dart';
 import 'package:Bookkeeper/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:Bookkeeper/utils/capitalize.dart';
 
 
 class SubscriptionsPage extends StatefulWidget {
@@ -136,7 +138,16 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
                                         children: [
                                           position != 0 ? Divider() : SizedBox(height: 0,),
                                           InkWell(
-                                            onTap: null,
+                                            onTap: (){
+                                              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                                return SubscriptionPage(snapshot.data[position]);
+                                              })).then((_) => {
+                                                setState((){
+                                                  total = getMoney();
+                                                  list = getSubscriptions();
+                                                })
+                                              });
+                                            },
                                             child: ListTile(
                                               contentPadding: EdgeInsets.zero,
                                               leading: Container(
@@ -148,7 +159,7 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
                                                 child: Icon(LineAwesomeIcons.history, color: Colors.orange, size: 24.0,),
                                               ),
                                               title: Text(snapshot.data[position].title, style: TextStyle(fontWeight: FontWeight.w500),),
-                                              subtitle: Text(snapshot.data[position].period),
+                                              subtitle: Text(snapshot.data[position].period.capitalize()),
                                               trailing: Column(
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -195,8 +206,8 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
     );
   }
   Future<double> getMoney() async{
-    final double x = await databaseHelper.getSubscriptionsSumMonthly();
-    return x;
+    final List<double> x = await databaseHelper.getSubscriptionsSumMonthly();
+    return x[0] + (x[1]/12);
   }
   Future<String> getCurrency() async {
 	  final SharedPreferences prefs = await _prefs;
