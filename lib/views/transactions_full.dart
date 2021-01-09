@@ -39,7 +39,6 @@ class _TransactionsFullPageState extends State<TransactionsFullPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(list);
     var size = MediaQuery.of(context).size;
     return Scaffold(
       body: SafeArea(
@@ -64,139 +63,6 @@ class _TransactionsFullPageState extends State<TransactionsFullPage> {
                         Text("Details", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18.0),),
                       ],
                     ),
-                    // Container(
-                    //   width: size.width,
-                    //   margin: EdgeInsets.only(top:24.0),
-                    //   child: FutureBuilder<List<t.Transaction>>(
-                    //     future: databaseHelper.getExpenseIncome(),
-                    //     builder: (context, snapshot){
-                    //       if(snapshot.hasData){
-                    //         if(snapshot.data.length == 2){
-                    //           return Column(
-                    //             children:[
-                    //               Container(
-                    //                 decoration: BoxDecoration(
-                    //                   color: Colors.white,
-                    //                   boxShadow: [
-                    //                     BoxShadow(
-                    //                       color: ThemeColors.primaryColor.withOpacity(.25),
-                    //                       blurRadius: 24.0,
-                    //                       offset: Offset(0, 8)
-                    //                     )
-                    //                   ],
-                    //                 ),
-                    //                 child: ListTile(
-                    //                   title: Text(snapshot.data[0].type == 0 ? "Expense" : "Income", style: TextStyle(fontWeight: FontWeight.w500),),
-                    //                   subtitle: Text(format(snapshot.data[0].money)),
-                    //                   leading: Container(
-                    //                     padding: EdgeInsets.all(16.0),
-                    //                     decoration: BoxDecoration(
-                    //                       color: snapshot.data[0].type == 0 ? ThemeColors.redColor.withOpacity(0.1) : ThemeColors.greenColor.withOpacity(0.1),
-                    //                       borderRadius: BorderRadius.circular(16.0),
-                    //                     ),
-                    //                     child: snapshot.data[0].type == 0 ?
-                    //                     Icon(LineAwesomeIcons.arrow_down, color: ThemeColors.redColor, size: 24.0,) :
-                    //                     Icon(LineAwesomeIcons.arrow_up, color: ThemeColors.greenColor, size: 24.0,),
-                    //                   ),
-                    //                 ),
-                    //               ),
-                    //               Container(
-                    //                 margin: EdgeInsets.only(top: 16.0),
-                    //                 decoration: BoxDecoration(
-                    //                   color: Colors.white,
-                    //                   boxShadow: [
-                    //                     BoxShadow(
-                    //                       color: ThemeColors.primaryColor.withOpacity(.25),
-                    //                       blurRadius: 24.0,
-                    //                       offset: Offset(0, 8)
-                    //                     )
-                    //                   ],
-                    //                 ),
-                    //                 child: ListTile(
-                    //                   title: Text(snapshot.data[1].type == 0 ? "Expense" : "Income", style: TextStyle(fontWeight: FontWeight.w500),),
-                    //                   subtitle: Text(format(snapshot.data[1].money)),
-                    //                   leading: Container(
-                    //                     padding: EdgeInsets.all(16.0),
-                    //                     decoration: BoxDecoration(
-                    //                       color: snapshot.data[1].type == 0 ? ThemeColors.redColor.withOpacity(0.1) : ThemeColors.greenColor.withOpacity(0.1),
-                    //                       borderRadius: BorderRadius.circular(16.0),
-                    //                     ),
-                    //                     child: snapshot.data[1].type == 0 ?
-                    //                     Icon(LineAwesomeIcons.arrow_down, color: ThemeColors.redColor, size: 24.0,) :
-                    //                     Icon(LineAwesomeIcons.arrow_up, color: ThemeColors.greenColor, size: 24.0,),
-                    //                   ),
-                    //                 ),
-                    //               )
-                    //             ]
-                    //           );
-                    //         }else if(snapshot.data.length == 1){
-                    //           return Column(
-                    //             children:[
-                    //               Container(
-                    //                 decoration: BoxDecoration(
-                    //                   color: Colors.white,
-                    //                   boxShadow: [
-                    //                     BoxShadow(
-                    //                       color: ThemeColors.primaryColor.withOpacity(.25),
-                    //                       blurRadius: 24.0,
-                    //                       offset: Offset(0, 8)
-                    //                     )
-                    //                   ],
-                    //                 ),
-                    //                 child: ListTile(
-                    //                   title: Text(snapshot.data[0].type == 0 ? "Expense" : "Income", style: TextStyle(fontWeight: FontWeight.w500),),
-                    //                   subtitle: Text(format(snapshot.data[0].money)),
-                    //                   leading: Container(
-                    //                     padding: EdgeInsets.all(16.0),
-                    //                     decoration: BoxDecoration(
-                    //                       color: snapshot.data[0].type == 0 ? ThemeColors.redColor.withOpacity(0.1) : ThemeColors.greenColor.withOpacity(0.1),
-                    //                       borderRadius: BorderRadius.circular(16.0),
-                    //                     ),
-                    //                     child: snapshot.data[0].type == 0 ?
-                    //                     Icon(LineAwesomeIcons.arrow_down, color: ThemeColors.redColor, size: 24.0,) :
-                    //                     Icon(LineAwesomeIcons.arrow_up, color: ThemeColors.greenColor, size: 24.0,),
-                    //                   ),
-                    //                 ),
-                    //               ),
-                    //             ]
-                    //           );
-                    //         }else{
-                    //           return Column(
-                    //             children:[
-                    //               ListTile(
-                    //                 title: Text("Income", style: TextStyle(fontWeight: FontWeight.w500),),
-                    //                 subtitle: Text(format(0)),
-                    //                 leading: Container(
-                    //                   padding: EdgeInsets.all(16.0),
-                    //                   decoration: BoxDecoration(
-                    //                     color: ThemeColors.primaryColor.withOpacity(0.1),
-                    //                     borderRadius: BorderRadius.circular(16.0),
-                    //                   ),
-                    //                   child: Icon(LineAwesomeIcons.minus, color: ThemeColors.primaryColor, size: 24.0,),
-                    //                 ),
-                    //               ),
-                    //               ListTile(
-                    //                 title: Text("Expense", style: TextStyle(fontWeight: FontWeight.w500),),
-                    //                 subtitle: Text(format(0)),
-                    //                 leading: Container(
-                    //                   padding: EdgeInsets.all(16.0),
-                    //                   decoration: BoxDecoration(
-                    //                     color: ThemeColors.primaryColor.withOpacity(0.1),
-                    //                     borderRadius: BorderRadius.circular(16.0),
-                    //                   ),
-                    //                   child: Icon(LineAwesomeIcons.minus, color: ThemeColors.primaryColor, size: 24.0,),
-                    //                 ),
-                    //               )
-                    //             ]
-                    //           );
-                    //         }
-                    //       }else if (snapshot.hasError) {
-                    //         return Text("${snapshot.error}");
-                    //       }
-                    //       return Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(ThemeColors.primaryColor),),);
-                    //     }
-                    //   ),
-                    // )
                   ],
                 ),
               ),
@@ -378,7 +244,6 @@ class _TransactionsFullPageState extends State<TransactionsFullPage> {
                                     physics: const NeverScrollableScrollPhysics(),
                                     itemCount: dummyList.length,
                                     itemBuilder: (context, position){
-                                      print(list);
                                       return Column(
                                         children: [
                                           position != 0 ? Divider() : SizedBox(height: 0,),
@@ -439,6 +304,11 @@ class _TransactionsFullPageState extends State<TransactionsFullPage> {
   }
   Future<List<t.Transaction>> getList(){
     Future<List<t.Transaction>> ts = databaseHelper.getTransactionsFullList();
+    ts.then((value) => {
+      setState(() {
+        dummyList = value.where((l) => l.date == DateFormat.yMMMMd().format(DateTime.now())).toList();
+      })
+    });
     return ts;
   }
 }

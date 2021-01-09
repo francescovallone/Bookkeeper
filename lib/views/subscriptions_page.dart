@@ -59,48 +59,69 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
                         ),
                       ],
                     ),
-                    Container(
-                      margin: EdgeInsets.only(top: 24.0),
-                      padding: EdgeInsets.symmetric(vertical: 24.0),
-                      width: double.infinity,
-                      height: size.height*.35,
-                      decoration: BoxDecoration(
-                        color: ThemeColors.primaryColor,
-                        borderRadius: BorderRadius.circular(30.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: ThemeColors.primaryColor.withOpacity(.45),
-                            blurRadius: 24.0,
-                            offset: Offset(0, 8)
+                    Stack(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(top: 24.0),
+                          padding: EdgeInsets.symmetric(vertical: 24.0),
+                          width: double.infinity,
+                          height: size.height*.35,
+                          decoration: BoxDecoration(
+                            color: ThemeColors.primaryColor,
+                            borderRadius: BorderRadius.circular(30.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: ThemeColors.primaryColor.withOpacity(.45),
+                                blurRadius: 24.0,
+                                offset: Offset(0, 8)
+                              )
+                            ]
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text("Monthly Cost", style: TextStyle(color: Colors.white70, fontSize: 18.0),),
+                              FutureBuilder<double>(
+                                future: total,
+                                builder: (context, snapshot){
+                                  if(snapshot.hasData){
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(format(snapshot.data), style: TextStyle(color: Colors.white, fontSize: 48.0, fontWeight: FontWeight.w500),),
+                                    );
+                                  }else if (snapshot.hasError) {
+                                    return Text("${snapshot.error}");
+                                  }else if(!snapshot.hasData){
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(format(0.00), style: TextStyle(color: Colors.white, fontSize: 48.0, fontWeight: FontWeight.w500),),
+                                    );
+                                  }
+                                  return Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(ThemeColors.primaryColor),),);
+                                }
+                              )
+                            ],
+                          ),
+                        ),
+                        Positioned(
+                          right: 16,
+                          top: 32,
+                          child: IconButton(
+                            color: Colors.white,
+                            icon: Icon(
+                              LineAwesomeIcons.refresh,
+                              size: 16,
+                            ),
+                            onPressed: (){
+                              setState(() {
+                                total = getMoney();
+                                list = getSubscriptions();
+                              });
+                            },
                           )
-                        ]
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text("Monthly Cost", style: TextStyle(color: Colors.white70, fontSize: 18.0),),
-                          FutureBuilder<double>(
-                            future: total,
-                            builder: (context, snapshot){
-                              if(snapshot.hasData){
-                                return Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(format(snapshot.data), style: TextStyle(color: Colors.white, fontSize: 48.0, fontWeight: FontWeight.w500),),
-                                );
-                              }else if (snapshot.hasError) {
-                                return Text("${snapshot.error}");
-                              }else if(!snapshot.hasData){
-                                return Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(format(0.00), style: TextStyle(color: Colors.white, fontSize: 48.0, fontWeight: FontWeight.w500),),
-                                );
-                              }
-                              return Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(ThemeColors.primaryColor),),);
-                            }
-                          )
-                        ],
-                      ),
+                        ),
+                      ],
                     )
                   ],
                 ),
@@ -207,7 +228,16 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
   }
   Future<double> getMoney() async{
     final List<double> x = await databaseHelper.getSubscriptionsSumMonthly();
-    return x[0] + (x[1]/12);
+    if(x[0] == null && x[1] == null){
+      return 0;
+    }
+    if(x[0] != null && x[1] == null){
+      return x[0];
+    }
+    if(x[0] == null && x[1] != null){
+      return (x[1] / 12);
+    }
+    return x[0] + (x[1] / 12);
   }
   Future<String> getCurrency() async {
 	  final SharedPreferences prefs = await _prefs;

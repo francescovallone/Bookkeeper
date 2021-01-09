@@ -64,48 +64,69 @@ class _BuyListPageState extends State<BuyListPage> {
                           ),
                         ],
                       ),
-                      Container(
-                        margin: EdgeInsets.only(top: 24.0),
-                        padding: EdgeInsets.symmetric(vertical: 24.0),
-                        width: double.infinity,
-                        height: size.height*.35,
-                        decoration: BoxDecoration(
-                          color: ThemeColors.primaryColor,
-                          borderRadius: BorderRadius.circular(30.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: ThemeColors.primaryColor.withOpacity(.45),
-                              blurRadius: 24.0,
-                              offset: Offset(0, 8)
+                      Stack(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(top: 24.0),
+                            padding: EdgeInsets.symmetric(vertical: 24.0),
+                            width: double.infinity,
+                            height: size.height*.35,
+                            decoration: BoxDecoration(
+                              color: ThemeColors.primaryColor,
+                              borderRadius: BorderRadius.circular(30.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: ThemeColors.primaryColor.withOpacity(.45),
+                                  blurRadius: 24.0,
+                                  offset: Offset(0, 8)
+                                )
+                              ]
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text("Total Cost", style: TextStyle(color: Colors.white70, fontSize: 18.0),),
+                                FutureBuilder<double>(
+                                  future: total,
+                                  builder: (context, snapshot){
+                                    if(snapshot.hasData){
+                                      return Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(format(snapshot.data), style: TextStyle(color: Colors.white, fontSize: 48.0, fontWeight: FontWeight.w500),),
+                                      );
+                                    }else if (snapshot.hasError) {
+                                      return Text("${snapshot.error}");
+                                    }else if(!snapshot.hasData){
+                                      return Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(format(0.00), style: TextStyle(color: Colors.white, fontSize: 48.0, fontWeight: FontWeight.w500),),
+                                      );
+                                    }
+                                    return Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(ThemeColors.primaryColor),),);
+                                  }
+                                )
+                              ],
+                            ),
+                          ),
+                          Positioned(
+                            right: 16,
+                            top: 32,
+                            child: IconButton(
+                              color: Colors.white,
+                              icon: Icon(
+                                LineAwesomeIcons.refresh,
+                                size: 16,
+                              ),
+                              onPressed: (){
+                                setState(() {
+                                  total = getMoney();
+                                  list = getEntries();
+                                });
+                              },
                             )
-                          ]
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text("Total Cost", style: TextStyle(color: Colors.white70, fontSize: 18.0),),
-                            FutureBuilder<double>(
-                              future: total,
-                              builder: (context, snapshot){
-                                if(snapshot.hasData){
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(format(snapshot.data), style: TextStyle(color: Colors.white, fontSize: 48.0, fontWeight: FontWeight.w500),),
-                                  );
-                                }else if (snapshot.hasError) {
-                                  return Text("${snapshot.error}");
-                                }else if(!snapshot.hasData){
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(format(0.00), style: TextStyle(color: Colors.white, fontSize: 48.0, fontWeight: FontWeight.w500),),
-                                  );
-                                }
-                                return Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(ThemeColors.primaryColor),),);
-                              }
-                            )
-                          ],
-                        ),
+                          ),
+                        ],
                       )
                     ],
                   ),
@@ -146,7 +167,12 @@ class _BuyListPageState extends State<BuyListPage> {
                                               onTap: (){
                                                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                                                   return BuyEntryPage(snapshot.data[position]);
-                                                }));
+                                                })).then((_) => {
+                                                  setState((){
+                                                    total = getMoney();
+                                                    list = getEntries();
+                                                  })
+                                                });
                                               },
                                               child: ListTile(
                                                 contentPadding: EdgeInsets.zero,

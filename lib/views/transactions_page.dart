@@ -67,48 +67,69 @@ class _TransactionsPageState extends State<TransactionsPage> {
                           ),
                         ],
                       ),
-                      Container(
-                        margin: EdgeInsets.only(top: 24.0),
-                        padding: EdgeInsets.symmetric(vertical: 24.0),
-                        width: double.infinity,
-                        height: size.height*.35,
-                        decoration: BoxDecoration(
-                          color: ThemeColors.primaryColor,
-                          borderRadius: BorderRadius.circular(30.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: ThemeColors.primaryColor.withOpacity(.45),
-                              blurRadius: 24.0,
-                              offset: Offset(0, 8)
+                      Stack(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(top: 24.0),
+                            padding: EdgeInsets.symmetric(vertical: 24.0),
+                            width: double.infinity,
+                            height: size.height*.35,
+                            decoration: BoxDecoration(
+                              color: ThemeColors.primaryColor,
+                              borderRadius: BorderRadius.circular(30.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: ThemeColors.primaryColor.withOpacity(.45),
+                                  blurRadius: 24.0,
+                                  offset: Offset(0, 8)
+                                )
+                              ]
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text("Available Balance", style: TextStyle(color: Colors.white70, fontSize: 18.0),),
+                                FutureBuilder<double>(
+                                  future: balance,
+                                  builder: (context, snapshot){
+                                    if(snapshot.hasData){
+                                      return Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(format(snapshot.data), style: TextStyle(color: Colors.white, fontSize: 48.0, fontWeight: FontWeight.w500),),
+                                      );
+                                    }else if (snapshot.hasError) {
+                                      return Text("${snapshot.error}");
+                                    }else if(!snapshot.hasData){
+                                      return Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(format(0.00), style: TextStyle(color: Colors.white, fontSize: 48.0, fontWeight: FontWeight.w500),),
+                                      );
+                                    }
+                                    return Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(ThemeColors.primaryColor),),);
+                                  }
+                                )
+                              ],
+                            ),
+                          ),
+                          Positioned(
+                            right: 16,
+                            top: 32,
+                            child: IconButton(
+                              color: Colors.white,
+                              icon: Icon(
+                                LineAwesomeIcons.refresh,
+                                size: 16,
+                              ),
+                              onPressed: (){
+                                setState(() {
+                                  balance = getMoney();
+                                  list = getTransactions();
+                                });
+                              },
                             )
-                          ]
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text("Available Balance", style: TextStyle(color: Colors.white70, fontSize: 18.0),),
-                            FutureBuilder<double>(
-                              future: balance,
-                              builder: (context, snapshot){
-                                if(snapshot.hasData){
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(format(snapshot.data), style: TextStyle(color: Colors.white, fontSize: 48.0, fontWeight: FontWeight.w500),),
-                                  );
-                                }else if (snapshot.hasError) {
-                                  return Text("${snapshot.error}");
-                                }else if(!snapshot.hasData){
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(format(0.00), style: TextStyle(color: Colors.white, fontSize: 48.0, fontWeight: FontWeight.w500),),
-                                  );
-                                }
-                                return Center(child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(ThemeColors.primaryColor),),);
-                              }
-                            )
-                          ],
-                        ),
+                          ),
+                        ]
                       )
                     ],
                   ),
